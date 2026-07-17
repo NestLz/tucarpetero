@@ -4,70 +4,74 @@ Marketplace de carpeteros — cartas TCG (Pokémon, Yu-Gi-Oh, Magic) en Lima, Pe
 
 **Stack:** Next.js 15 (App Router) · React 19 · Tailwind CSS v4 · Docker
 
-## Pantallas incluidas (MVP con data de ejemplo)
+## Pantallas
 
 | Ruta | Pantalla |
 |---|---|
-| `/` | Búsqueda global con filtro por TCG |
-| `/carta/[id]` | Ficha de carta multi-vendedor + historial de precios |
+| `/` | Búsqueda con filtros (juego, expansión, rareza, condición, precio, idioma, entrega, verificados), autocompletado y orden |
+| `/carta/[id]` | Ficha de carta: precio de mercado / más bajo / última venta, historial de ventas, disponibilidad, ofertas de carpeteros con detalle expandible (fotos, notas del vendedor, política de entrega) |
+| `/condiciones` | Guía visual de las 5 condiciones estándar (Near Mint → Dañada) |
 | `/subastas` | Subasta en vivo (pujar, compra ya, anti-sniping) + lista |
+| `/carrito` | Carrito agrupado por vendedor, cantidades y subtotal |
+| `/checkout` | Flujo de pago en 3 pasos: entrega por vendedor → método de pago (mock) → confirmación con número de orden |
 | `/chat` | Chat interno comprador ↔ carpetero, ligado a cada carta |
+| `/favoritos` | Cartas guardadas con su precio de mercado actual |
 | `/perfil/[user]` | Perfil de carpetero: reputación, carpetas, reseñas |
 
-Los datos viven en `lib/data.js` — reemplazar por base de datos real en fase 2.
+## Datos
+
+Todo vive en `lib/data.js`, con dos fuentes:
+
+- **Catálogo real**: cartas de Pokémon (pokemontcg.io) y Yu-Gi-Oh (YGOPRODeck) — nombre, set,
+  rareza, imagen y precio de referencia real. Se traen con:
+  ```bash
+  node scripts/fetch-pokemon-cards.mjs
+  node scripts/fetch-yugioh-cards.mjs
+  ```
+  Magic sigue siendo data de ejemplo hasta integrar Scryfall.
+- **Precios y ofertas generados**: historial de ventas, precio de mercado, y las ofertas de
+  cada carpetero (condición, idioma, stock, fotos) se derivan de forma determinística por
+  carta (sembrado con su `id`) — no son aleatorios en cada carga, pero tampoco son datos
+  reales de ventas.
+
+Estado (carrito, favoritos) se persiste en `localStorage` vía `CartContext` /
+`FavoritesContext` en `components/`.
 
 ## Requisitos
 
-- Docker Desktop para Mac instalado y corriendo
-- Cuenta de GitHub
+- Docker Desktop instalado y corriendo
 
-## 1. Crear el repositorio en GitHub
+## Levantar en local
 
 ```bash
 cd tucarpetero
-git init
-git add .
-git commit -m "MVP inicial: búsqueda, ficha, subastas, chat, perfil"
-```
-
-Luego crea el repo vacío en github.com (botón **New repository**, nombre
-`tucarpetero`, **sin** README ni .gitignore) y conéctalo:
-
-```bash
-git remote add origin git@github.com:TU_USUARIO/tucarpetero.git
-git branch -M main
-git push -u origin main
-```
-
-> Si usas HTTPS en vez de SSH:
-> `git remote add origin https://github.com/TU_USUARIO/tucarpetero.git`
-
-## 2. Levantar en local con Docker
-
-```bash
 docker compose up --build
 ```
 
-Abre **http://localhost:9090**. El hot reload está activo: edita cualquier
-archivo y el navegador se actualiza solo.
+Abre **http://localhost:9090**. El hot reload está activo: edita cualquier archivo y el
+navegador se actualiza solo.
 
 Para detener: `Ctrl+C` y luego `docker compose down`.
 
-## 3. Editar
+## Editar
 
 - **Diseño / tokens**: `app/globals.css` (colores, fuentes, clases `.holo`)
-- **Datos de ejemplo**: `lib/data.js`
-- **Navegación inferior**: `components/Nav.jsx`
+- **Datos, precios, condiciones**: `lib/data.js`
+- **Navegación**: `components/Nav.jsx` (barra inferior en mobile, header en desktop)
+- **Carrito / favoritos**: `components/CartContext.jsx`, `components/FavoritesContext.jsx`
 - **Componentes compartidos**: `components/ui.jsx`
 
 ## Próximas fases (no incluidas aún)
 
 - Autenticación de usuarios y publicación real de ofertas
 - Base de datos (Postgres/Supabase) en lugar de `lib/data.js`
-- Catálogo real vía APIs: Scryfall (Magic), pokemontcg.io, YGOPRODeck
-- Pagos con Culqi + escrow (retención hasta confirmar recepción)
+- Catálogo real de Magic vía Scryfall
+- Integración real de pagos con Culqi (hoy `/checkout` es solo UI simulada — buscar
+  `// TODO: integrar Culqi` en `app/checkout/page.jsx`) y escrow real en backend
 - Subastas en tiempo real (WebSockets) + notificaciones WhatsApp
-- Flujo de sellado en tienda certificadora (fotos con timestamp + código)
+- Flujo de sellado en tienda certificadora (fotos con timestamp + código real, hoy
+  simulado en el detalle expandible de cada oferta)
+- Fotos reales subidas por el vendedor (hoy son placeholders en `/carta/[id]`)
 
 ## Comandos Docker de referencia
 
@@ -80,6 +84,13 @@ docker compose up -d --build
 
 # ver logs si corre en segundo plano
 docker compose logs -f web
+
+# correr el build de producción dentro del contenedor (verificación, no reemplaza el dev server)
+docker compose exec web npm run build
+
+# reiniciar el contenedor (necesario después de un build de producción,
+# porque pisa la carpeta .next que usa el servidor de desarrollo)
+docker compose restart web
 
 # detener y limpiar contenedores
 docker compose down
