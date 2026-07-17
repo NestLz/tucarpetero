@@ -1,0 +1,13 @@
+services:
+  web:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "9090:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - WATCHPACK_POLLING=true
