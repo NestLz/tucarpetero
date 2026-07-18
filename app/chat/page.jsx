@@ -1,38 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { CHATS } from "@/lib/data";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useChats } from "@/components/ChatContext";
 import { Verified } from "@/components/ui";
 
-export default function Chat() {
+function ChatInner() {
+  const searchParams = useSearchParams();
+  const { chats, sendMessage } = useChats();
   const [open, setOpen] = useState(null); // id de conversación abierta
-  const [chats, setChats] = useState(CHATS);
   const [draft, setDraft] = useState("");
+
+  // si venimos de un "Chatear" con ?open=<id>, abre ese chat directo
+  useEffect(() => {
+    const openParam = searchParams.get("open");
+    if (openParam) setOpen(openParam);
+  }, [searchParams]);
 
   const active = chats.find((c) => c.id === open);
 
   const send = () => {
     if (!draft.trim() || !active) return;
-    setChats((prev) =>
-      prev.map((c) =>
-        c.id === active.id
-          ? {
-              ...c,
-              messages: [
-                ...c.messages,
-                {
-                  from: "me",
-                  txt: draft.trim(),
-                  at: new Date().toLocaleTimeString("es-PE", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
-                },
-              ],
-            }
-          : c
-      )
-    );
+    sendMessage(active.id, draft.trim());
     setDraft("");
   };
 
@@ -172,5 +161,13 @@ export default function Chat() {
         )}
       </section>
     </main>
+  );
+}
+
+export default function Chat() {
+  return (
+    <Suspense fallback={null}>
+      <ChatInner />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
+import { useOrders } from "@/components/OrdersContext";
 import { CardArt } from "@/components/ui";
 import { TCG_COLORS } from "@/lib/data";
 
@@ -60,6 +61,7 @@ function StepIndicator({ step }) {
 
 export default function Checkout() {
   const { items, total, clear } = useCart();
+  const { addOrder } = useOrders();
   const [step, setStep] = useState(1);
   const [delivery, setDelivery] = useState({}); // { [seller]: { method, store } }
   const [paymentMethod, setPaymentMethod] = useState(null);
@@ -84,6 +86,14 @@ export default function Checkout() {
 
   const confirmOrder = () => {
     const num = `TC-${Date.now().toString(36).toUpperCase()}`;
+    addOrder({
+      orderNumber: num,
+      date: new Date().toISOString(),
+      items,
+      total,
+      paymentMethod,
+      delivery,
+    });
     setOrderNumber(num);
     setConfirmed(true);
     clear();

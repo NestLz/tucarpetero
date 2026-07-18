@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   CARDS,
   TCG_COLORS,
@@ -207,9 +208,18 @@ function FilterSectionLabel({ children }) {
   );
 }
 
-export default function Buscar() {
+function BuscarInner() {
+  const searchParams = useSearchParams();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(() => searchParams.get("q") ?? "");
+
+  // si llegamos de nuevo con ?q= distinto (ej. otra búsqueda desde el
+  // header estando ya en el home), sincroniza sin pisar lo que se escribe
+  useEffect(() => {
+    const urlQ = searchParams.get("q");
+    if (urlQ && urlQ !== q) setQ(urlQ);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const [tcg, setTcg] = useState("Todos");
   const [setFilter, setSetFilter] = useState("Todas");
   const [rarityFilters, setRarityFilters] = useState(new Set());
@@ -734,5 +744,13 @@ export default function Buscar() {
         </p>
       )}
     </main>
+  );
+}
+
+export default function Buscar() {
+  return (
+    <Suspense fallback={null}>
+      <BuscarInner />
+    </Suspense>
   );
 }
