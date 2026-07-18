@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { TCG_COLORS } from "@/lib/data";
 import { Verified, Stars } from "@/components/ui";
 import { useChats } from "@/components/ChatContext";
+import HeroArt from "@/components/HeroArt";
 
 export default function PerfilClient({ seller: s }) {
   const router = useRouter();
@@ -28,14 +29,16 @@ export default function PerfilClient({ seller: s }) {
 
       <section className="relative mb-4 overflow-hidden rounded-2xl bg-ink p-5 md:mb-8 lg:p-8">
         <div
-          className="holo absolute inset-0 opacity-[0.16]"
+          className="absolute inset-0 overflow-hidden"
           style={{
             maskImage:
               "radial-gradient(90% 130% at 15% 0%, #000 0%, transparent 60%)",
             WebkitMaskImage:
               "radial-gradient(90% 130% at 15% 0%, #000 0%, transparent 60%)",
           }}
-        />
+        >
+          <HeroArt variant="vio" opacity={0.16} className="absolute inset-0 h-full w-full" />
+        </div>
         <div className="relative flex items-center gap-3.5 lg:gap-5">
           <span className="holo flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full font-display text-2xl font-extrabold text-white lg:h-20 lg:w-20 lg:text-3xl">
             {s.name[0]}

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #131a2a;
+  --color-ink: #0d0d12;
   --color-ink2: #1c2438;
   --color-paper: #f7f8fb;
   --color-line: #e3e7ef;
@@ -10,6 +10,9 @@
   --color-vio: #7c5cff;
   --color-teal: #0fb5a0;
   --color-amber: #e8a13c;
+  --color-magenta: #e8306b;
+  --color-lima: #9aad3c;
+  --color-purpura: #a98fd4;
 
   --font-display: "Sora", sans-serif;
   --font-sans: "Inter", sans-serif;
@@ -25,8 +28,39 @@
   color: transparent;
 }
 
+/* Títulos estilo cómic: leve inclinación + sombra offset dura, sin blur */
+h1.font-display,
+h2.font-display {
+  transform: skew(-2deg);
+  text-shadow: 2px 2px 0 var(--color-magenta);
+}
+
+/* Hover de cards del catálogo/grid: lift + sombra offset dura de color */
+.tile-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tile-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 0 var(--color-magenta);
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.pulse-magenta {
+  animation: pulse-soft 1.8s ease-in-out infinite;
+}
+
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
+  background-image: radial-gradient(rgba(13, 13, 18, 0.03) 1px, transparent 1px);
+  background-size: 10px 10px;
   color: var(--color-body);
   font-family: var(--font-sans);
 }

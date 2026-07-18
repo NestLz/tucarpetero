@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AUCTIONS, CARDS, TCG_COLORS, fmtMin } from "@/lib/data";
 import { CardArt } from "@/components/ui";
+import HeroArt from "@/components/HeroArt";
 
 export default function Subastas() {
   const feat = AUCTIONS[0];
@@ -16,23 +17,25 @@ export default function Subastas() {
       </h1>
 
       {/* subasta destacada */}
-      <section className="relative mb-4 overflow-hidden rounded-2xl bg-ink p-4.5 pb-4 md:mb-8 lg:p-8">
+      <section className="relative mb-4 overflow-hidden rounded-2xl border border-magenta/40 bg-ink p-4.5 pb-4 shadow-[0_0_32px_-8px_#E8306B] md:mb-8 lg:p-8">
         <div
-          className="holo absolute inset-0 opacity-[0.16]"
+          className="absolute inset-0 overflow-hidden"
           style={{
             maskImage:
               "radial-gradient(90% 130% at 85% 100%, #000 0%, transparent 60%)",
             WebkitMaskImage:
               "radial-gradient(90% 130% at 85% 100%, #000 0%, transparent 60%)",
           }}
-        />
+        >
+          <HeroArt variant="magenta" opacity={0.16} className="absolute inset-0 h-full w-full" />
+        </div>
         <div className="relative lg:flex lg:items-start lg:gap-8">
           <div className="lg:flex-1">
             <div className="mb-3 flex items-center justify-between">
               <span className="holo rounded-full px-2.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wider text-white">
                 🔴 Subasta en vivo
               </span>
-              <span className="text-xs font-extrabold tabular-nums text-[#FFD166]">
+              <span className="pulse-magenta text-xs font-extrabold tabular-nums text-magenta">
                 ⏱ termina en {fmtMin(feat.endsInMin)}
               </span>
             </div>

@@ -37,7 +37,7 @@ export default function Favoritos() {
             <Link
               key={c.id}
               href={`/carta/${c.id}`}
-              className="overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+              className="tile-hover overflow-hidden rounded-2xl border border-line bg-white"
             >
               <div
                 className="relative flex h-24 items-center justify-center border-b border-line text-4xl md:h-32 md:text-5xl"

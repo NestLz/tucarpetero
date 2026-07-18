@@ -16,6 +16,7 @@ import {
 } from "@/lib/data";
 import { CardArt } from "@/components/ui";
 import { useFavorites } from "@/components/FavoritesContext";
+import HeroArt from "@/components/HeroArt";
 
 const TCGS = ["Todos", "Pokémon", "Yu-Gi-Oh", "Magic"];
 
@@ -375,12 +376,14 @@ function BuscarInner() {
       {/* hero */}
       <section className="relative mb-4 overflow-hidden rounded-2xl bg-ink p-5 md:mb-6 md:p-10">
         <div
-          className="holo absolute inset-0 opacity-[0.18]"
+          className="absolute inset-0 overflow-hidden"
           style={{
             maskImage: "radial-gradient(80% 120% at 85% 0%, #000 0%, transparent 60%)",
             WebkitMaskImage: "radial-gradient(80% 120% at 85% 0%, #000 0%, transparent 60%)",
           }}
-        />
+        >
+          <HeroArt variant="magenta" opacity={0.18} className="absolute inset-0 h-full w-full" />
+        </div>
         <div className="relative md:max-w-xl">
           <h1 className="font-display text-[21px] font-extrabold leading-tight text-white md:text-[34px]">
             Busca la carta.
@@ -690,7 +693,7 @@ function BuscarInner() {
           <Link
             key={c.id}
             href={`/carta/${c.id}`}
-            className="overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+            className="tile-hover overflow-hidden rounded-2xl border border-line bg-white"
           >
             <div
               className="relative flex h-24 items-center justify-center border-b border-line text-4xl md:h-32 md:text-5xl"
